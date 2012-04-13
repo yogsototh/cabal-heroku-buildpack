@@ -22,7 +22,14 @@ function clearEnvironment() {
 }
 
 function downloadAndExtract() {
-  mkdir -p $1 && curl $2 -o - | tar xzf - -C $1
+  case $2 in
+  *.tar)     options=xf ;;
+  *.tar.gz)  options=xzf ;;
+  *.tar.bz2) options=xjf;;
+  *) error "Unknow format for $2; should be tar, tar.gz or tar.bz2" ;;
+  esac
+
+  mkdir -p $1 && curl $2 -o - | tar $options - -C $1
 }
 
 function configureMakeInstall() {
