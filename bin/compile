@@ -20,7 +20,7 @@ setIfUnset HASKELL_PLATFORM_VERSION "2011.4.0.0"
 arch=$(uname -m)
 ghcver=$GHC_BOOTSTRAP_VERSION
 bsdir=$CACHE_DIR/bootstrap
-ghcurl="$BUILDPACK_GHC_BASE_URL/$ghcver/ghc-$ghcver-$arch-unknown-linux.tar.gz"
+ghcurl="$BUILDPACK_GHC_BASE_URL/$ghcver/ghc-$ghcver-$arch-unknown-linux.tar.bz2"
 platformver="$HASKELL_PLATFORM_VERSION"
 platformurl="$HASKELL_PLATFORM_BASE_URL/$platver/haskell-platform-$platformver-tar.gz"
 
