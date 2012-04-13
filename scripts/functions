@@ -1,3 +1,13 @@
+#!/bin/bash
+
+loginfo() { echo "Info: $*"; }
+error() { echo "Error: $*" >&2; exit 1; }
+
+setIfUnset() {
+    varname="$1"
+    defaultValue="$2"
+    eval "if [ \"\$$varname\" = \"\" ]; then $varname=$defaultValue; loginfo \"$varname unset; use \$$varname\"; fi"
+}
 
 function indent() {
   c='s/^/       /'
@@ -17,6 +27,8 @@ function downloadAndExtract() {
 
 function configureMakeInstall() {
   pushd $1;
+  # create build directory
+  mkdir -p $2
   cmd="./configure --prefix=$2 && make && make install"
   echo -n "Info: $cmd";
   eval $cmd
@@ -29,4 +41,5 @@ function mkCompilerDir() {
   [[ ! -d "$compilerDir" ]]; mkdir -p $compilerDir;
   echo $compilerDir;
 }
+
 
