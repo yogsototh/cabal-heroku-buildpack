@@ -39,10 +39,16 @@ fi
 if [ -f "$bsdir.ghc.compiled" ]; then
   loginfo "already compiled GHC bootstrap version ${ghcver}";
 else
-  $(configureMakeInstall $bsdir/ghc-$ghcver $BUILD_DIR/bootstrap/ghc-$ghcver) && \
+  ghcdir="$bsdir/ghc-$ghcver"
+  ghcprefix="$BUILD_DIR/bootstrap/ghc-$ghcver"
+  $(configureMakeInstall $ghcdir $ghcprefix) && \
     touch $bsdir.ghc.compiled;
 fi
 # GHC is compiled
+
+export PATH="$ghcprefix/bin:$PATH"
+export LIBRARY_PATH="$LIBRARY_PATH:$ghcprefix/lib"
+export C_INCLUDE_PATH="$C_INCLUDE_PATH:$ghcprefix/include"
 
 if [ -f "$bsdir.platform.downloaded" ]; then
   loginfo "already downloaded GHC bootstrap version ${platformver}";
@@ -56,7 +62,10 @@ fi
 if [ -f "$bsdir.platform.compiled" ]; then
   loginfo "already compiled GHC bootstrap version ${platformver}";
 else
-  $(configureMakeInstall $bsdir/haskell-platform-$platformver $BUILD_DIR/bootstrap/haskell-platform-$platformver) && \
+  platformdir="$bsdir/haskell-platform-$platformver"
+  platformprefix="$BUILD_DIR/bootstrap/haskell-platform-$platformver"
+  $(configureMakeInstall $platformdir $platformprefix) && \
     touch $bsdir.platform.compiled;
 fi
 # Haskell platform is compiled is compiled
+export PATH="$platformprefix/bin:$PATH"
