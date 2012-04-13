@@ -22,7 +22,7 @@ ghcver=$GHC_BOOTSTRAP_VERSION
 bsdir=$CACHE_DIR/bootstrap
 ghcurl="$BUILDPACK_GHC_BASE_URL/$ghcver/ghc-$ghcver-$arch-unknown-linux.tar.bz2"
 platformver="$HASKELL_PLATFORM_VERSION"
-platformurl="$HASKELL_PLATFORM_BASE_URL/$platver/haskell-platform-$platformver-tar.gz"
+platformurl="$HASKELL_PLATFORM_BASE_URL/$platver/haskell-platform-$platformver.tar.gz"
 
 loginfo "bootstrap directory: ${bsdir}";
 loginfo "bootstrap URL: $ghcurl";
