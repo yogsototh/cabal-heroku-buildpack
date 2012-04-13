@@ -5,38 +5,45 @@ set -e
 
 source $(dirname $0)/../scripts/functions
 
+loginfo() { echo "Info: $*"; }
+error() { echo "Error: $*" >&2; exit 1; }
+
 BUILD_DIR=$1
 echo "Info: BUILD_DIR=$BUILD_DIR"
 CACHE_DIR=$2
 echo "Info: CACHE_DIR=$CACHE_DIR"
 
 ## CHECK BUILDPACK_GHC_BASE_URL is set
-if [ "$BUILDPACK_GHC_BASE_URL" != "" ]; then
-  arch=$(uname -m)
-  ghcver=$GHC_BOOTSTRAP_VERSION
-  if [ "$ghcver" == "" ]; then
-    echo "Error: please set GHC_BOOTSTRAP_VERSION";
-    exit 1;
-  fi;
-  bsdir=$CACHE_DIR/bootstrap
-  ghcurl="$BUILDPACK_GHC_BASE_URL/$ghcver/ghc-$ghcver-$arch-unknown-linux.tar.bz2"
-  echo "Info: bootstrap directory: ${bsdir}";
-  echo "Info: bootstrap URL: $ghcurl";
-  if [ -f "$bsdir.downloaded" ]; then
-    echo "Info: already downloaded GHC bootstrap version ${ghcver}";
-  else
-    echo "Info: downloading GHC $ghcver form $ghcurl";
-    $(downloadAndExtract $bsdir $ghcurl);
-    touch $bsdir.downloaded;
-  fi;
+if [ "$BUILDPACK_GHC_BASE_URL" = "" ]; then
+    BUILDPACK_GHC_BASE_URL="http://www.haskell.org/ghc/dist"
+    loginfo "BUILDPACK_GHC_BASE_URL is not set; use $BUILDPACK_GHC_BASE_URL"
+fi
 
-  if [ -f "$bsdir.compiled" ]; then
-    echo "Info: already compiled GHC bootstrap version ${ghcver}";
-  else
-    $(configureMakeInstall $bsdir/ghc-$ghcver $BUILD_DIR/bootstrap/ghc-$ghcver);
-    touch $bsdir.compiled;
-  fi;
+## CHECK GHC_BOOTSTRAP_VERSION is set
+if [ "$GHC_BOOTSTRAP_VERSION" == "" ]; then
+  GHC_BOOTSTRAP_VERSION="7.0.4" 
+  loginfo "GHC_BOOTSTRAP_VERSION is not set; use $GHC_BOOTSTRAP_VERSION"
+fi
+
+arch=$(uname -m)
+ghcver=$GHC_BOOTSTRAP_VERSION
+bsdir=$CACHE_DIR/bootstrap
+ghcurl="$BUILDPACK_GHC_BASE_URL/$ghcver/ghc-$ghcver-$arch-unknown-linux.tar.bz2"
+
+loginfo "bootstrap directory: ${bsdir}";
+loginfo "bootstrap URL: $ghcurl";
+
+if [ -f "$bsdir.downloaded" ]; then
+  loginfo "already downloaded GHC bootstrap version ${ghcver}";
 else
-  echo "Error: please set BUILDPACK_GHC_BASE_URL";
-  exit 1;
+  loginfo "downloading GHC $ghcver from $ghcurl";
+  $(downloadAndExtract $bsdir $ghcurl) && \
+  touch $bsdir.downloaded;
+fi
+
+if [ -f "$bsdir.compiled" ]; then
+  loginfo "already compiled GHC bootstrap version ${ghcver}";
+else
+  $(configureMakeInstall $bsdir/ghc-$ghcver $BUILD_DIR/bootstrap/ghc-$ghcver) && \
+    touch $bsdir.compiled;
 fi

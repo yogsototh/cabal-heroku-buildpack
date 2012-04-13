@@ -12,13 +12,14 @@ function clearEnvironment() {
 }
 
 function downloadAndExtract() {
-  mkdir -p $1 && curl $2 -o - | tar jxf - -C $1
+  mkdir -p $1 && curl $2 -o - | tar xzf - -C $1
 }
 
 function configureMakeInstall() {
   pushd $1;
-  echo -n "Info: ./configure --prefix=$2 && make && make install";
-  ./configure --prefix=$2 && make && make install;
+  cmd="./configure --prefix=$2 && make && make install"
+  echo -n "Info: $cmd";
+  eval $cmd
   echo "[OK]";
   popd;
 }
